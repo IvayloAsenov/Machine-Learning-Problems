@@ -100,8 +100,6 @@ def main():
     for idx in np.random.choice(correct, 5):
         show_example(idx, X_test, y_test, predictions)
 
-    # joblib.dump(model, 'filename.pkl');
-
     print(len(correct))
     print(len(misclassification))
 
