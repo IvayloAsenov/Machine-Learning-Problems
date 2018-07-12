@@ -65,7 +65,7 @@ def main():
     model.add(Convolution2D(8, kernel_size=(3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Flatten())
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.75))
     model.add(Dense(16, activation='relu'))
     model.add(Dense(7, activation='softmax'))
 
@@ -74,7 +74,7 @@ def main():
 
     # train the model
     model.compile(optimizer=Adagrad(), loss='categorical_crossentropy', metrics=['accuracy'])
-    history = model.fit(X_train_n, y_train, validation_data=(X_test_n, y_test), epochs=18, batch_size=8)
+    history = model.fit(X_train_n, y_train, validation_data=(X_test_n, y_test), epochs=30, batch_size=8)
 
     history_dict = history.history
     loss_values = history_dict['loss']
