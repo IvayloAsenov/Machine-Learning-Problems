@@ -61,10 +61,11 @@ def main():
 
     # build our CNN
     model = Sequential()
-    model.add(Convolution2D(16, kernel_size=(6,6), padding='same', strides=(3,3), activation='relu', input_shape=input_shape))
-    model.add(Convolution2D(32, (3, 3), activation='relu'))
+    model.add(Convolution2D(48, kernel_size=(6, 6), padding='same', strides=(3, 3), activation='relu', input_shape=input_shape))
+    model.add(Convolution2D(8, kernel_size=(3, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Flatten())
+    model.add(Dropout(0.5))
     model.add(Dense(16, activation='relu'))
     model.add(Dense(7, activation='softmax'))
 
@@ -73,7 +74,7 @@ def main():
 
     # train the model
     model.compile(optimizer=Adagrad(), loss='categorical_crossentropy', metrics=['accuracy'])
-    history = model.fit(X_train_n, y_train, validation_data=(X_test_n, y_test), epochs=30, batch_size=12)
+    history = model.fit(X_train_n, y_train, validation_data=(X_test_n, y_test), epochs=18, batch_size=8)
 
     history_dict = history.history
     loss_values = history_dict['loss']
