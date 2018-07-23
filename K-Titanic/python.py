@@ -49,9 +49,9 @@ from keras.layers import Dense, Dropout
 
 def build_model(optimizer, n_layer_one, n_layer_two):
     model = Sequential()
-    model.add(Dense(n_layer_one, kernel_initializer='uniform', activation='relu', input_dim=9))
+    model.add(Dense(6, kernel_initializer='uniform', activation='relu', input_dim=9))
     model.add(Dropout(0.2))
-    model.add(Dense(n_layer_two, kernel_initializer='uniform', activation='relu'))
+    model.add(Dense(6, kernel_initializer='uniform', activation='relu'))
     model.add(Dropout(0.1))
     model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
     model.compile(optimizer = optimizer, loss = 'binary_crossentropy', metrics = ['accuracy'])
@@ -60,11 +60,9 @@ def build_model(optimizer, n_layer_one, n_layer_two):
 model = KerasClassifier(build_fn=build_model)
 parameters = {'batch_size' : [12, 24],
               'epochs'   : [100, 300],
-              'optimizer'  : ['adam', 'rmsprop'],
-              'n_layer_one': [6, 12],
-              'n_layer_two': [6, 12]}
+              'optimizer'  : ['adam', 'rmsprop']}
 
-grid_search = GridSearchCV(estimator = model, param_grid = parameters, scoring = 'accuracy', cv = 10)
+grid_search = GridSearchCV(estimator = model, param_grid = parameters, scoring = 'accuracy', cv = 5)
 grid_search = grid_search.fit(X_train, y_train)
 
 best_accuracy = grid_search.best_params_
