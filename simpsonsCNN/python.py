@@ -8,16 +8,26 @@ classifier = Sequential()
 classifier.add(Convolution2D(32, 3, 3, input_shape = (64, 64, 3), activation = 'relu'))
 classifier.add(MaxPooling2D(pool_size = (2, 2)))
 
+classifier.add(Convolution2D(64, 3, 3, input_shape = (64, 64, 3), activation = 'relu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+
+classifier.add(Convolution2D(128, 3, 3, input_shape = (64, 64, 3), activation = 'relu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+
 classifier.add(Flatten())
 
 classifier.add(Dense(output_dim = 128, activation = 'relu'))
+classifier.add(Dropout(0.2))
+
+classifier.add(Dense(output_dim = 256, activation = 'relu'))
 classifier.add(Dropout(0.5))
 
-classifier.add(Dense(output_dim = 7, activation = 'softmax'))
+classifier.add(Dense(output_dim = 6, activation = 'softmax'))
 
 classifier.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 from keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
 
 train_datagen = ImageDataGenerator(rescale=1./255,
                                    shear_range = 0.2,
@@ -36,30 +46,19 @@ test_set = train_datagen.flow_from_directory('data/test',
                                              batch_size = 32,
                                              class_mode = 'categorical')
 
-classifier.fit_generator(training_set,
-                         epochs = 25,
+classifier.fit_generator(generator = training_set,
+                         epochs = 30,
                          validation_data = test_set)
 
 
+# Testing on new data 
 
-for idx in np.random.choice(misclassification, 5):
-    show_example(idx, X_test, y_test, predictions)
+import numpy as np
+from keras.preprocessing import image
 
-def show_example(idx, X, y, y_hat):
-    """
-    idx = index of the images to show
-    X = the numpy array of pixel values
-    y = the expected label
-    y_hat = the predicted label (optional)
-    """
+test_image = image.load_img('data/new-test-images/sideshow_bob_2.jpg', target_size = (64, 64))
+test_image = image.img_to_array(test_image)
+test_image = np.expand_dims(test_image, axis = 0)
 
-    print(f'Sample {idx}')
-    if len(y.shape) > 1:
-        print(f'Expected is {labels_name[np.argmax(y[idx])]}')
-    else:
-        print(f'Expected is {labels_name[y[idx]]}')
-
-    if len(y_hat) > 0:
-        print(f'Prediction is {labels_name[np.argmax(y_hat[idx])]}')
-    plt.imshow(cv2.cvtColor(X[idx], cv2.COLOR_BGR2RGB))
-    plt.show()
+result = classifier.predict(test_image)
+training_set.class_indices
