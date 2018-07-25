@@ -14,6 +14,9 @@ classifier.add(MaxPooling2D(pool_size = (2, 2)))
 classifier.add(Convolution2D(128, 3, 3, input_shape = (64, 64, 3), activation = 'relu'))
 classifier.add(MaxPooling2D(pool_size = (2, 2)))
 
+classifier.add(Convolution2D(256, 3, 3, input_shape = (64, 64, 3), activation = 'relu'))
+classifier.add(MaxPooling2D(pool_size = (2, 2)))
+
 classifier.add(Flatten())
 
 classifier.add(Dense(output_dim = 128, activation = 'relu'))
@@ -24,7 +27,7 @@ classifier.add(Dropout(0.5))
 
 classifier.add(Dense(output_dim = 6, activation = 'softmax'))
 
-classifier.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
+classifier.compile(optimizer = 'adagrad', loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
@@ -47,7 +50,7 @@ test_set = train_datagen.flow_from_directory('data/test',
                                              class_mode = 'categorical')
 
 classifier.fit_generator(generator = training_set,
-                         epochs = 30,
+                         epochs = 35,
                          validation_data = test_set)
 
 
@@ -62,3 +65,34 @@ test_image = np.expand_dims(test_image, axis = 0)
 
 result = classifier.predict(test_image)
 training_set.class_indices
+
+
+# Saving model
+classifier_json = classifier.to_json()
+with open("classifier.json", "w") as json_file:
+    json_file.write(classifier_json)
+
+classifier.save_weights("classifier.h5")
+print("saved model to disk")
+
+
+# Loading model
+from keras.models import model_from_json
+json_file = open('classifier.json', 'r')
+loaded_classifier_json = json_file.read()
+json_file.close()
+loaded_classifier = model_from_json(loaded_classifier_json)
+loaded_classifier.load_weights("classifier.h5")
+print("loaded model from disk")
+
+
+result = loaded_classifier.predict(test_image)
+
+
+
+
+
+
+
+
+
