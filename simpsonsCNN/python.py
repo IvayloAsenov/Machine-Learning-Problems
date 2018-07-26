@@ -37,6 +37,8 @@ train_datagen = ImageDataGenerator(rescale=1./255,
                                    zoom_range = 0.2,
                                    horizontal_flip = True)
 
+validation_datagen = ImageDataGenerator(rescale = 1./255)
+
 test_datagen = ImageDataGenerator(rescale = 1./255)
 
 training_set = train_datagen.flow_from_directory('data/training',
@@ -44,14 +46,16 @@ training_set = train_datagen.flow_from_directory('data/training',
                                                  batch_size = 32,
                                                  class_mode = 'categorical')
 
-test_set = train_datagen.flow_from_directory('data/test',
+validation_set = validation_datagen.flow_from_directory('data/validation',
                                              target_size = (64, 64),
                                              batch_size = 32,
                                              class_mode = 'categorical')
 
-classifier.fit_generator(generator = training_set,
-                         epochs = 35,
-                         validation_data = test_set)
+test_set= validation_datagen.flow_from_directory('data/test',
+                                                 target_size = (64, 64),
+                                                 class_mode = 'categorical')
+
+classifier.fit_generator(generator = training_set, epochs = 35, validation_data = validation_set)
 
 
 # Testing on new data 
@@ -59,7 +63,7 @@ classifier.fit_generator(generator = training_set,
 import numpy as np
 from keras.preprocessing import image
 
-test_image = image.load_img('data/new-test-images/sideshow_bob_2.jpg', target_size = (64, 64))
+test_image = image.load_img('data/new-test-images/milhouse_impossible.jpg', target_size = (64, 64))
 test_image = image.img_to_array(test_image)
 test_image = np.expand_dims(test_image, axis = 0)
 
